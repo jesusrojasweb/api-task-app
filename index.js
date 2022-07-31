@@ -3,6 +3,7 @@ const app = express();
 const { expressjwt: jwt } = require("express-jwt");
 const jwks = require("jwks-rsa");
 const guard = require("express-jwt-permissions");
+const connectDB = require("./config/db");
 
 const port = process.env.PORT || 8080;
 
@@ -13,19 +14,19 @@ const jwtCheck = jwt({
     jwksRequestsPerMinute: 5,
     jwksUri: "https://dev-h70joa6x.us.auth0.com/.well-known/jwks.json",
   }),
-  audience: "https://task-app/api",
+  audience: "https://taskappjesusrojasweb.com/api",
   issuer: "https://dev-h70joa6x.us.auth0.com/",
   algorithms: ["RS256"],
 });
 
 app.use(jwtCheck);
 
-app.get("/tasks", function (req, res) {
-  res.json({
-    task1: "this is the first task",
-    task2: "this is another task",
-  });
-});
+connectDB();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(require("./src/routes"));
 
 app.listen(port, () => {
   console.log(`Express running on port ${port}`);
